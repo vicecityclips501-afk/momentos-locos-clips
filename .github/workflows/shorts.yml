@@ -1,0 +1,71 @@
+name: Generar Shorts
+
+on:
+  schedule:
+    # Horas en UTC. En España (invierno, UTC+1): 10:40, 16:40 y 20:40
+    - cron: "40 9 * * *"
+    - cron: "40 15 * * *"
+    - cron: "40 19 * * *"
+  workflow_dispatch:
+    inputs:
+      orden:
+        description: "short o descubrir"
+        default: "short"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: shorts
+  cancel-in-progress: false
+
+jobs:
+  generar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      TWITCH_CLIENT_ID: ${{ secrets.TWITCH_CLIENT_ID }}
+      TWITCH_CLIENT_SECRET: ${{ secrets.TWITCH_CLIENT_SECRET }}
+      ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
+      ELEVENLABS_VOICE_ID: ${{ secrets.ELEVENLABS_VOICE_ID }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Instalar ffmpeg y fuentes
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg fonts-inter
+
+      - name: Instalar dependencias
+        run: pip install -q -r requirements.txt
+
+      - name: Caché del modelo de subtítulos
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/huggingface
+          key: whisper-small-v1
+
+      - name: Ejecutar
+        run: python main.py "${{ github.event.inputs.orden || 'short' }}"
+
+      - name: Publicar el Short como release (para la revisión y la subida)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          shopt -s nullglob
+          for v in bandeja/*.mp4; do
+            tag="$(basename "$v" .mp4)"
+            gh release create "$tag" "$v" "bandeja/$tag.json" \
+              --title "$tag" --notes "Pendiente de revisión"
+          done
+
+      - name: Guardar clips usados y candidatos
+        run: |
+          git config user.name "momentos-locos-bot"
+          git config user.email "bot@users.noreply.github.com"
+          git add data/
+          git diff --cached --quiet || git commit -m "Actualizar datos [skip ci]"
+          git push
