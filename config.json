@@ -4,7 +4,7 @@
   "juego": "Grand Theft Auto VI",
   "idioma": "es",
   "horas_atras": 24,
-  "vistas_minimas": 50,
+  "vistas_minimas": 20,
   "clips_por_short": 3,
   "segundos_max_por_clip": 17,
   "elevenlabs_api_key": "",
