@@ -14,7 +14,7 @@ ScaledBorderAndShadow: yes
 
 [V4+ Styles]
 Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
-Style: Sub,Inter Display Black,82,&H00FFFFFF,&H00FFFFFF,&H00000000,&H96000000,-1,0,0,0,100,100,0,0,1,7,3,2,70,70,660,1
+Style: Sub,Inter Display Black,96,&H00FFFFFF,&H00FFFFFF,&H00000000,&H96000000,-1,0,0,0,100,100,0,0,1,7,3,2,70,70,660,1
 
 [Events]
 Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
@@ -56,9 +56,10 @@ def _limpia(txt):
     return txt.replace("{", "").replace("}", "").replace("\\", "").upper()
 
 
-def escribir_ass(palabras, salida, por_bloque=3):
+def escribir_ass(palabras, salida, por_bloque=3, margen_v=None):
     """Bloques de 3 palabras en mayúsculas; la palabra que suena, en amarillo."""
-    lineas = [ASS_HEADER]
+    cab = ASS_HEADER if margen_v is None else ASS_HEADER.replace(",660,1\n", f",{margen_v},1\n")
+    lineas = [cab]
     for i in range(0, len(palabras), por_bloque):
         bloque = palabras[i:i + por_bloque]
         fin_bloque = bloque[-1][1]
