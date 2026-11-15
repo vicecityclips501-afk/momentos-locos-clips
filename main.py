@@ -2,7 +2,7 @@
 
 Uso:
   python main.py short       -> busca clips de streamers autorizados y monta un Short "top 3"
-  python main.py descubrir   -> lista streamers en español con audiencia en GTA (para pedir permiso)
+  python main.py descubrir   -> lista streamers en español con audiencia en GTA (los más vistos)
 """
 import json
 import logging
@@ -61,7 +61,7 @@ def metadatos(clips, cfg):
     descripcion = (
         f"Los momentos más locos de GTA VI de hoy en los directos de Twitch.\n\n"
         f"🎮 Créditos (¡ve a verlos en directo!):\n{creditos}\n\n"
-        f"Clips usados con permiso de sus creadores. Si eres uno de ellos y quieres que retiremos tu clip, escríbenos.\n"
+        f"¿Eres uno de estos streamers y prefieres que no usemos tus clips? Escríbenos y lo retiramos al momento.\n"
         f"{cfg.get('mencion_voz', '')}\n\n"
         f"#GTA6 #GTAVI #GrandTheftAuto #Shorts #Twitch #Gaming"
     ).strip()
@@ -73,23 +73,21 @@ def metadatos(clips, cfg):
 
 
 def cmd_short(cfg):
-    autorizados = [s for s in cfg["streamers_autorizados"] if s.strip()]
-    if not autorizados:
-        log.warning("No hay streamers autorizados en config.json. No se genera nada.")
-        return None
     tw = Twitch(cfg["twitch_client_id"], cfg["twitch_client_secret"])
     game_id = tw.game_id(cfg["juego"])
-    ids = tw.user_ids(autorizados)
     usados = cargar_usados()
+    excluidos = {s.strip().lower() for s in cfg.get("streamers_excluidos", []) if s.strip()}
 
+    # Clips más vistos del juego en español (los crean los propios espectadores)
+    brutos = tw.clips_del_juego(game_id, cfg["horas_atras"], cfg["idioma"])
     candidatos = []
-    for login, uid in ids.items():
-        for c in tw.clips_de_streamer(uid, game_id, cfg["horas_atras"]):
-            if c["id"] in usados or c["view_count"] < cfg["vistas_minimas"]:
-                continue
-            candidatos.append({"id": c["id"], "url": c["url"], "streamer": c["broadcaster_name"],
-                               "login": login, "titulo": c["title"], "vistas": c["view_count"],
-                               "duracion": c.get("duration", 30)})
+    for c in brutos:
+        login = c["broadcaster_name"].lower()
+        if c["id"] in usados or login in excluidos or c["view_count"] < cfg["vistas_minimas"]:
+            continue
+        candidatos.append({"id": c["id"], "url": c["url"], "streamer": c["broadcaster_name"],
+                           "login": login, "titulo": c["title"], "vistas": c["view_count"],
+                           "duracion": c.get("duration", 30)})
     # máximo 1 clip por streamer para variar, ordenados por vistas
     candidatos.sort(key=lambda c: c["vistas"], reverse=True)
     elegidos, vistos = [], set()
