@@ -1,7 +1,7 @@
 """Momentos Locos Gaming — genera Shorts con los mejores clips de Twitch.
 
 Uso:
-  python main.py short       -> busca los clips más vistos en español y monta un Short "top 3"
+  python main.py short       -> busca los clips más vistos en español y monta un Short por clip
   python main.py descubrir   -> lista streamers en español con audiencia en GTA (los más vistos)
 """
 import json
@@ -13,7 +13,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
-from vcc.editor import montar_top
+from vcc.editor import montar_unico
 from vcc.twitch import Twitch
 
 RAIZ = Path(__file__).resolve().parent
@@ -53,23 +53,16 @@ def descargar(url, destino):
     return destino
 
 
-def metadatos(clips, cfg):
-    top = clips[0]
-    hoy = datetime.now(ZoneInfo("Europe/Madrid")).strftime("%d/%m")
-    titulo = f"Lo más LOCO de GTA 6 hoy 🤯 ({hoy}) #gta6 #shorts"
-    creditos = "\n".join(f"#{i + 1} {c['streamer']} → https://twitch.tv/{c['streamer']}"
-                         for i, c in enumerate(clips))
+def metadatos(c, cfg):
+    titulo_clip = (c["titulo"] or "").strip()
+    titulo = f"{titulo_clip} | {c['streamer']} #gta6 #shorts" if titulo_clip else f"{c['streamer']} en GTA #gta6 #shorts"
     descripcion = (
-        f"Los momentos más locos de GTA VI de hoy en los directos de Twitch.\n\n"
-        f"🎮 Créditos (¡ve a verlos en directo!):\n{creditos}\n\n"
-        f"{cfg.get('mencion_voz', '')}\n\n"
+        f"🎮 Clip de {c['streamer']} en directo → https://twitch.tv/{c['login']}\n\n"
         f"#GTA6 #GTAVI #GrandTheftAuto #Shorts #Twitch #Gaming"
-    ).strip()
-    etiquetas = ["GTA 6", "GTA VI", "Grand Theft Auto VI", "GTA 6 momentos", "GTA 6 clips",
-                 "GTA 6 español", "Twitch"] + [c["streamer"] for c in clips]
+    )
+    etiquetas = ["GTA 6", "GTA VI", "Grand Theft Auto VI", "GTA 6 clips", "GTA 6 español", "Twitch", c["streamer"]]
     return {"titulo": titulo[:100], "descripcion": descripcion, "etiquetas": etiquetas,
-            "clips": [{"streamer": c["streamer"], "url": c["url"], "titulo": c["titulo"],
-                       "vistas": c["vistas"]} for c in clips]}
+            "clip": {"streamer": c["streamer"], "url": c["url"], "titulo": c["titulo"], "vistas": c["vistas"]}}
 
 
 def cmd_short(cfg):
@@ -101,31 +94,28 @@ def cmd_short(cfg):
             continue
         elegidos.append(c)
         vistos.add(c["login"])
-        if len(elegidos) == cfg["clips_por_short"]:
+        if len(elegidos) == cfg["shorts_por_ronda"]:
             break
-    if len(elegidos) < cfg["clips_por_short"]:
-        log.info("Solo hay %d clips nuevos; hacen falta %d. Se espera a la siguiente ronda.",
-                 len(elegidos), cfg["clips_por_short"])
+    if not elegidos:
+        log.info("No hay clips nuevos con suficientes visitas. Se espera a la siguiente ronda.")
         return None
 
     trabajo = RAIZ / cfg["carpeta_trabajo"]
     trabajo.mkdir(exist_ok=True)
-    for c in elegidos:
-        c["ruta"] = descargar(c["url"], trabajo / f"{c['id']}.mp4")
-
     salida_dir = RAIZ / cfg["carpeta_bandeja"]
     salida_dir.mkdir(exist_ok=True)
     marca = datetime.now(timezone.utc).strftime("%Y%m%d-%H%M")
-    video = salida_dir / f"short-{marca}.mp4"
-    montar_top(elegidos, video, cfg, trabajo)
-
-    meta = metadatos(elegidos, cfg)
-    meta["video"] = video.name
-    (salida_dir / f"short-{marca}.json").write_text(json.dumps(meta, ensure_ascii=False, indent=2))
+    for n, c in enumerate(elegidos, 1):
+        ruta = descargar(c["url"], trabajo / f"{c['id']}.mp4")
+        video = salida_dir / f"short-{marca}-{n}.mp4"
+        montar_unico(ruta, video, c["streamer"], cfg, trabajo)
+        meta = metadatos(c, cfg)
+        meta["video"] = video.name
+        (salida_dir / f"short-{marca}-{n}.json").write_text(json.dumps(meta, ensure_ascii=False, indent=2))
+        log.info("Short listo: %s (%s, %d visitas)", video.name, c["streamer"], c["vistas"])
 
     guardar_usados(usados | {c["id"] for c in elegidos})
-    log.info("Short listo: %s", video)
-    return video
+    return elegidos
 
 
 def cmd_descubrir(cfg):
