@@ -1,0 +1,4 @@
+requests
+faster-whisper
+edge-tts
+yt-dlp
