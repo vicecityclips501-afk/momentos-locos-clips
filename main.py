@@ -80,6 +80,11 @@ def cmd_short(cfg):
 
     # Clips más vistos del juego en español (los crean los propios espectadores)
     brutos = tw.clips_del_juego(game_id, cfg["horas_atras"], cfg["idioma"])
+    # y además, los clips de los streamers en español que están jugando ahora
+    for uid, _login in tw.directos(game_id, cfg["idioma"]):
+        brutos += tw.clips_de_streamer(uid, game_id, cfg["horas_atras"])
+    vistos_ids = set()
+    brutos = [c for c in brutos if not (c["id"] in vistos_ids or vistos_ids.add(c["id"]))]
     candidatos = []
     for c in brutos:
         login = c["broadcaster_name"].lower()
