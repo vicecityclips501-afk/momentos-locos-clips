@@ -3,7 +3,6 @@
   "twitch_client_secret": "",
   "juego": "Grand Theft Auto VI",
   "idioma": "es",
-  "streamers_autorizados": [],
   "horas_atras": 24,
   "vistas_minimas": 50,
   "clips_por_short": 3,
@@ -15,5 +14,6 @@
   "modelo_subtitulos": "small",
   "carpeta_bandeja": "bandeja",
   "carpeta_trabajo": "trabajo",
-  "mencion_voz": "Voz: ElevenLabs"
+  "mencion_voz": "Voz: ElevenLabs",
+  "streamers_excluidos": []
 }
