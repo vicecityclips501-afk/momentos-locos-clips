@@ -124,3 +124,40 @@ def montar_top(clips, salida, cfg, trabajo: Path):
                         frase, cfg, trabajo)
         segmentos.append(seg)
     return unir(segmentos, salida, trabajo)
+
+
+def montar_unico(clip, salida, streamer, cfg, trabajo: Path):
+    """Short limpio de un solo clip: el clip entero, grande y centrado, con subtítulos
+    de lo que se dice y el nombre del streamer. Sin voz en off ni títulos."""
+    trabajo.mkdir(parents=True, exist_ok=True)
+    base = trabajo / Path(salida).stem
+    dur = min(duracion(clip), cfg.get("segundos_max_unico", 59))
+
+    audio = base.with_suffix(".audio.wav")
+    _run(["ffmpeg", "-y", "-t", f"{dur:.2f}", "-i", str(clip), "-vn", "-ac", "2", "-ar", "48000", str(audio)])
+    ass = base.with_suffix(".ass")
+    escribir_ass(transcribir(audio, cfg["modelo_subtitulos"], cfg["idioma"]), ass, margen_v=UNICO_SUBS_MARGEN)
+
+    credito = _esc(f"twitch.tv/{streamer}")
+    ass_esc = str(ass).replace("\\", "/").replace(":", "\\:")
+    fontsdir = str(FUENTES).replace(":", "\\:")
+    vf = (
+        f"[0:v]fps={FPS},split[a][b];"
+        f"[a]scale={W}:{H}:force_original_aspect_ratio=increase,crop={W}:{H},boxblur=24:2,eq=brightness=-0.22[bg];"
+        f"[b]scale={W}:-2[fg];"
+        f"[bg][fg]overlay=0:(H-h)/2[v1];"
+        f"[v1]drawtext=fontfile='{F_TEXTO}':text='{credito}':fontsize=40:fontcolor=white:"
+        f"x=(w-text_w)/2:y=(h-{W}*9/16)/2-96:box=1:boxcolor={MORADO_TWITCH}:boxborderw=16[v2];"
+        f"[v2]ass='{ass_esc}':fontsdir='{fontsdir}'[v]"
+    )
+    _run([
+        "ffmpeg", "-y", "-t", f"{dur:.2f}", "-i", str(clip),
+        "-filter_complex", vf, "-map", "[v]", "-map", "0:a",
+        "-c:v", "libx264", "-preset", "veryfast", "-crf", "20", "-pix_fmt", "yuv420p",
+        "-c:a", "aac", "-b:a", "192k", "-ar", "48000", "-r", str(FPS), "-movflags", "+faststart", str(salida),
+    ])
+    return salida
+
+
+# subtítulos justo debajo del vídeo (el vídeo 16:9 ocupa y=656..1264)
+UNICO_SUBS_MARGEN = 1920 - 1264 - 150
