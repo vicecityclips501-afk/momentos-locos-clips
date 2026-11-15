@@ -1,7 +1,7 @@
 """Momentos Locos Gaming — genera Shorts con los mejores clips de Twitch.
 
 Uso:
-  python main.py short       -> busca clips de streamers autorizados y monta un Short "top 3"
+  python main.py short       -> busca los clips más vistos en español y monta un Short "top 3"
   python main.py descubrir   -> lista streamers en español con audiencia en GTA (los más vistos)
 """
 import json
@@ -25,6 +25,7 @@ ENV = {
     "twitch_client_secret": "TWITCH_CLIENT_SECRET",
     "elevenlabs_api_key": "ELEVENLABS_API_KEY",
     "elevenlabs_voice_id": "ELEVENLABS_VOICE_ID",
+    "juego": "JUEGO",  # para pruebas con otro juego (p. ej. GTA V)
 }
 
 
@@ -61,7 +62,6 @@ def metadatos(clips, cfg):
     descripcion = (
         f"Los momentos más locos de GTA VI de hoy en los directos de Twitch.\n\n"
         f"🎮 Créditos (¡ve a verlos en directo!):\n{creditos}\n\n"
-        f"¿Eres uno de estos streamers y prefieres que no usemos tus clips? Escríbenos y lo retiramos al momento.\n"
         f"{cfg.get('mencion_voz', '')}\n\n"
         f"#GTA6 #GTAVI #GrandTheftAuto #Shorts #Twitch #Gaming"
     ).strip()
