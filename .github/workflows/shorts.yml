@@ -11,6 +11,9 @@ on:
       orden:
         description: "short o descubrir"
         default: "short"
+      juego:
+        description: "Juego de Twitch (vacío = el de config.json). Para pruebas: Grand Theft Auto V"
+        default: ""
 
 permissions:
   contents: write
@@ -28,6 +31,7 @@ jobs:
       TWITCH_CLIENT_SECRET: ${{ secrets.TWITCH_CLIENT_SECRET }}
       ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
       ELEVENLABS_VOICE_ID: ${{ secrets.ELEVENLABS_VOICE_ID }}
+      JUEGO: ${{ github.event.inputs.juego }}
     steps:
       - uses: actions/checkout@v4
 
