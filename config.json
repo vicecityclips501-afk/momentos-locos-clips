@@ -4,9 +4,7 @@
   "juego": "Grand Theft Auto VI",
   "idioma": "es",
   "horas_atras": 24,
-  "vistas_minimas": 20,
-  "clips_por_short": 3,
-  "segundos_max_por_clip": 17,
+  "vistas_minimas": 150,
   "elevenlabs_api_key": "",
   "elevenlabs_voice_id": "",
   "elevenlabs_modelo": "eleven_multilingual_v2",
@@ -15,5 +13,7 @@
   "carpeta_bandeja": "bandeja",
   "carpeta_trabajo": "trabajo",
   "mencion_voz": "Voz: ElevenLabs",
-  "streamers_excluidos": []
+  "streamers_excluidos": [],
+  "shorts_por_ronda": 2,
+  "segundos_max_unico": 59
 }
