@@ -69,7 +69,12 @@ class Twitch:
 
     def clips_del_juego(self, game_id, hours, idioma=None):
         """Para DESCUBRIR streamers (no para publicar): clips más vistos del juego."""
-        clips = self._clips({"game_id": game_id, "started_at": self._since(hours)}, pages=5)
+        clips = self._clips({"game_id": game_id, "started_at": self._since(hours)}, pages=10)
         if idioma:
             clips = [c for c in clips if (c.get("language") or "").startswith(idioma)]
         return clips
+
+    def directos(self, game_id, idioma, cuantos=30):
+        """Streamers jugando ahora a ese juego en ese idioma, de más a menos espectadores."""
+        res = self._get("streams", {"game_id": game_id, "language": idioma, "first": 100})["data"]
+        return [(s["user_id"], s["user_login"]) for s in res[:cuantos]]
