@@ -24,16 +24,39 @@ AMARILLO = r"{\c&H00D7FF&}"   # BGR: amarillo/dorado
 BLANCO = r"{\c&HFFFFFF&}"
 
 
+def _traducir(texto, destino="es"):
+    """Traduce una frase al español. Si falla, devuelve el texto original."""
+    try:
+        from deep_translator import GoogleTranslator
+        return GoogleTranslator(source="auto", target=destino).translate(texto) or texto
+    except Exception as e:  # sin red o límite: mejor subtítulos en el idioma original que ninguno
+        log.warning("Traducción no disponible (%s)", e)
+        return texto
+
+
 def transcribir(audio_path, modelo="small", idioma="es"):
-    """Devuelve una lista de palabras [(inicio, fin, texto)]. Lista vacía si falla."""
+    """Devuelve una lista de palabras [(inicio, fin, texto)]. Lista vacía si falla.
+    Con idioma="auto" detecta el idioma y, si no es español, traduce cada frase al español."""
     global _model
     try:
         from faster_whisper import WhisperModel
         if _model is None:
             _model = WhisperModel(modelo, device="cpu", compute_type="int8")
-        segs, _ = _model.transcribe(str(audio_path), language=idioma, word_timestamps=True,
-                                    vad_filter=True)
+        segs, info = _model.transcribe(str(audio_path), language=None if idioma == "auto" else idioma,
+                                       word_timestamps=True, vad_filter=True)
+        segs = list(segs)
         palabras = []
+        if idioma == "auto" and info.language != "es":
+            log.info("Idioma detectado: %s → subtítulos traducidos al español", info.language)
+            for s in segs:
+                trad = _traducir(s.text.strip())
+                ws = trad.split()
+                if not ws:
+                    continue
+                paso = max(0.12, (s.end - s.start) / len(ws))
+                for k, w in enumerate(ws):
+                    palabras.append((s.start + k * paso, min(s.end, s.start + (k + 1) * paso), w))
+            return palabras
         for s in segs:
             for w in (s.words or []):
                 t = w.word.strip()
