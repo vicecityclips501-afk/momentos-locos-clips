@@ -136,7 +136,11 @@ def montar_unico(clip, salida, streamer, cfg, trabajo: Path):
     audio = base.with_suffix(".audio.wav")
     _run(["ffmpeg", "-y", "-t", f"{dur:.2f}", "-i", str(clip), "-vn", "-ac", "2", "-ar", "48000", str(audio)])
     ass = base.with_suffix(".ass")
-    escribir_ass(transcribir(audio, cfg["modelo_subtitulos"], cfg["idioma"]), ass, margen_v=UNICO_SUBS_MARGEN)
+    palabras = transcribir(audio, cfg["modelo_subtitulos"], cfg["idioma"])
+    # si después de la última frase hay más de 4 s sin hablar, se corta ahí: los Shorts que se alargan pierden gente
+    if palabras and dur - palabras[-1][1] > 4:
+        dur = max(10.0, palabras[-1][1] + 1.5)
+    escribir_ass(palabras, ass, margen_v=UNICO_SUBS_MARGEN)
 
     credito = _esc(f"twitch.tv/{streamer}")
     ass_esc = str(ass).replace("\\", "/").replace(":", "\\:")
