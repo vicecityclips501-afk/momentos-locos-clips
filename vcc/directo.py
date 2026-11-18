@@ -21,7 +21,7 @@ REACCION = re.compile(
     re.IGNORECASE,
 )
 REACCION_SEG = 4        # lo que tarda el chat en reaccionar a lo que ve
-ANTES, DESPUES = 22, 6  # segundos de clip antes y después del pico de reacción
+ANTES, DESPUES = 15, 5  # segundos de clip antes y después del pico de reacción
 VENTANA = 8             # segundos sobre los que se mide la actividad del chat
 SEPARACION = 75         # distancia mínima entre dos momentos elegidos
 
