@@ -25,13 +25,21 @@ BLANCO = r"{\c&HFFFFFF&}"
 
 
 def _traducir(texto, destino="es"):
-    """Traduce una frase al español. Si falla, devuelve el texto original."""
+    """Traduce una frase al español (Google y, si falla, MyMemory). Si todo falla, devuelve None."""
     try:
-        from deep_translator import GoogleTranslator
-        return GoogleTranslator(source="auto", target=destino).translate(texto) or texto
-    except Exception as e:  # sin red o límite: mejor subtítulos en el idioma original que ninguno
-        log.warning("Traducción no disponible (%s)", e)
-        return texto
+        from deep_translator import GoogleTranslator, MyMemoryTranslator
+    except Exception as e:
+        log.warning("Traducción no disponible: falta deep_translator (%s)", e)
+        return None
+    for nombre, fn in (("google", lambda: GoogleTranslator(source="auto", target=destino).translate(texto)),
+                       ("mymemory", lambda: MyMemoryTranslator(source="en-US", target="es-ES").translate(texto))):
+        try:
+            r = fn()
+            if r and r.strip() and r.strip().lower() != texto.strip().lower():
+                return r
+        except Exception as e:
+            log.warning("Traducción %s falló (%s)", nombre, e)
+    return None
 
 
 def transcribir(audio_path, modelo="small", idioma="es"):
@@ -48,14 +56,20 @@ def transcribir(audio_path, modelo="small", idioma="es"):
         palabras = []
         if idioma == "auto" and info.language != "es":
             log.info("Idioma detectado: %s → subtítulos traducidos al español", info.language)
+            fallos = 0
             for s in segs:
                 trad = _traducir(s.text.strip())
+                if trad is None:
+                    fallos += 1
+                    trad = s.text.strip()
                 ws = trad.split()
                 if not ws:
                     continue
                 paso = max(0.12, (s.end - s.start) / len(ws))
                 for k, w in enumerate(ws):
                     palabras.append((s.start + k * paso, min(s.end, s.start + (k + 1) * paso), w))
+            if segs and fallos > len(segs) / 2:
+                raise RuntimeError(f"traducción fallida en {fallos}/{len(segs)} frases")
             return palabras
         for s in segs:
             for w in (s.words or []):
