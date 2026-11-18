@@ -2,10 +2,8 @@ name: Generar Shorts
 
 on:
   schedule:
-    # Horas en UTC. En España (invierno, UTC+1): 10:40, 16:40 y 20:40
-    - cron: "40 9 * * *"
-    - cron: "40 15 * * *"
-    - cron: "40 19 * * *"
+    # Cada hora (semana de lanzamiento)
+    - cron: "17 * * * *"
   workflow_dispatch:
     inputs:
       orden:
