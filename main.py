@@ -2,6 +2,7 @@
 
 Uso:
   python main.py short       -> busca los clips más vistos en español y monta un Short por clip
+  python main.py directo     -> graba el directo de $CANAL durante $MINUTOS y corta los picos del chat
   python main.py descubrir   -> lista streamers en español con audiencia en GTA (los más vistos)
 """
 import json
@@ -118,6 +119,41 @@ def cmd_short(cfg):
     return elegidos
 
 
+def cmd_directo(cfg, canal, minutos, cuantos=4):
+    """Graba el directo de 'canal' durante 'minutos', lee el chat y monta un Short por cada pico."""
+    from vcc import directo
+    trabajo = RAIZ / cfg["carpeta_trabajo"]
+    salida_dir = RAIZ / cfg["carpeta_bandeja"]
+    salida_dir.mkdir(exist_ok=True)
+    canal = canal.strip().lower().lstrip("@")
+    video, t0, mensajes = directo.grabar(canal, minutos, trabajo / f"directo-{canal}.ts")
+    dur = float(subprocess.run(["ffprobe", "-v", "0", "-show_entries", "format=duration", "-of", "csv=p=0",
+                                str(video)], capture_output=True, text=True).stdout.strip() or 0)
+    log.info("Grabados %.0f s y %d mensajes de chat", dur, len(mensajes))
+    picos = directo.momentos(t0, mensajes, dur, cuantos)
+    if not picos:
+        log.info("El chat no ha tenido picos claros en esta grabación.")
+        return []
+    marca = datetime.now(timezone.utc).strftime("%Y%m%d-%H%M")
+    hechos = []
+    for n, (ini, fin, fuerza, muestra) in enumerate(picos, 1):
+        corte = directo.cortar(video, ini, fin, trabajo / f"corte-{canal}-{n}.mp4")
+        nombre = f"directo-{canal}-{marca}-{n}"
+        montar_unico(corte, salida_dir / f"{nombre}.mp4", canal, cfg, trabajo)
+        meta = {
+            "titulo": f"{canal} en GTA 6 #gta6 #shorts",
+            "descripcion": f"🎮 Momento del directo de {canal} → https://twitch.tv/{canal}\n\n"
+                           f"#GTA6 #GTAVI #GrandTheftAuto #Shorts #Twitch #Gaming",
+            "etiquetas": ["GTA 6", "GTA VI", "Grand Theft Auto VI", "GTA 6 clips", "GTA 6 español", "Twitch", canal],
+            "directo": {"canal": canal, "segundo_inicio": round(ini), "fuerza_chat": fuerza, "chat": muestra},
+            "video": f"{nombre}.mp4",
+        }
+        (salida_dir / f"{nombre}.json").write_text(json.dumps(meta, ensure_ascii=False, indent=2))
+        log.info("Short listo: %s (chat x%.1f)", nombre, fuerza)
+        hechos.append(nombre)
+    return hechos
+
+
 def cmd_descubrir(cfg):
     """Streamers en español jugando ahora a GTA (VI o V), ordenados por espectadores."""
     tw = Twitch(cfg["twitch_client_id"], cfg["twitch_client_secret"])
@@ -144,5 +180,7 @@ if __name__ == "__main__":
     orden = sys.argv[1] if len(sys.argv) > 1 else "short"
     if orden == "descubrir":
         cmd_descubrir(cfg)
+    elif orden == "directo":
+        cmd_directo(cfg, os.environ.get("CANAL") or "rubius", int(os.environ.get("MINUTOS") or 40))
     else:
         cmd_short(cfg)
