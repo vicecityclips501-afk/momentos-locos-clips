@@ -221,6 +221,8 @@ if __name__ == "__main__":
     orden = sys.argv[1] if len(sys.argv) > 1 else "short"
     if orden == "descubrir":
         cmd_descubrir(cfg)
+    elif orden == "datos":
+        subprocess.run([sys.executable, str(RAIZ / "datos" / "voz_render.py")] + ([os.environ["CANAL"]] if os.environ.get("CANAL") not in (None, "", "rubius") else []), check=True)
     elif orden == "subtitular":
         cmd_subtitular(cfg, os.environ.get("CANAL") or "")
     elif orden == "directo":
