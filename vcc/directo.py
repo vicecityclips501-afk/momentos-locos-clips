@@ -17,7 +17,7 @@ log = logging.getLogger("vcc.directo")
 
 # Mensajes que indican que acaba de pasar algo (risas, sorpresa, gente pidiendo clip)
 REACCION = re.compile(
-    r"(?:j[aseiAJ]){2,}|jsj|xd+\b|kek|lul|omegalul|pog|lmao|\bclip|😂|🤣|💀|wtf|\bno{3,}\b|madre m[ií]a|dios m[ií]o|ostia|hostia",
+    r"(?:j[aseiAJ]){2,}|jsj|xd+\b|kek|lul|omegalul|pog|lmao|\blol\b|\blmfao\b|icant|\bw+\b|holy|bro+\b|\bclip|😂|🤣|💀|wtf|\bno{3,}\b|madre m[ií]a|dios m[ií]o|ostia|hostia",
     re.IGNORECASE,
 )
 REACCION_SEG = 4        # lo que tarda el chat en reaccionar a lo que ve
