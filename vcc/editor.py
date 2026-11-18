@@ -148,10 +148,11 @@ def montar_unico(clip, salida, streamer, cfg, trabajo: Path):
     vf = (
         f"[0:v]fps={FPS},split[a][b];"
         f"[a]scale={W}:{H}:force_original_aspect_ratio=increase,crop={W}:{H},boxblur=24:2,eq=brightness=-0.22[bg];"
-        f"[b]scale={W}:-2[fg];"
-        f"[bg][fg]overlay=0:(H-h)/2[v1];"
+        # juego con zoom (1600x900 recortado al centro a 1080x900): en el móvil se ve el doble de grande
+        f"[b]scale=1600:900,crop={W}:900[fg];"
+        f"[bg][fg]overlay=0:{UNICO_Y}[v1];"
         f"[v1]drawtext=fontfile='{F_TEXTO}':text='{credito}':fontsize=40:fontcolor=white:"
-        f"x=(w-text_w)/2:y=(h-{W}*9/16)/2-96:box=1:boxcolor={MORADO_TWITCH}:boxborderw=16[v2];"
+        f"x=(w-text_w)/2:y={UNICO_Y}-96:box=1:boxcolor={MORADO_TWITCH}:boxborderw=16[v2];"
         f"[v2]ass='{ass_esc}':fontsdir='{fontsdir}'[v]"
     )
     _run([
@@ -163,5 +164,6 @@ def montar_unico(clip, salida, streamer, cfg, trabajo: Path):
     return salida
 
 
-# subtítulos justo debajo del vídeo (el vídeo 16:9 ocupa y=656..1264)
-UNICO_SUBS_MARGEN = 1920 - 1264 - 150
+# el juego (con zoom) ocupa y=420..1320; subtítulos justo debajo
+UNICO_Y = 420
+UNICO_SUBS_MARGEN = 1920 - (UNICO_Y + 900) - 150
