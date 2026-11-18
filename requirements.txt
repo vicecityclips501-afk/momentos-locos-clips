@@ -1,5 +1,6 @@
 requests
 faster-whisper
+av>=11,<14
 edge-tts
 yt-dlp
 streamlink
