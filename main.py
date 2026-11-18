@@ -154,6 +154,41 @@ def cmd_directo(cfg, canal, minutos, cuantos=4):
     return hechos
 
 
+def cmd_subtitular(cfg, tags):
+    """Añade subtítulos a Shorts ya montados (releases). Crea una release nueva '<tag>-subs'."""
+    from vcc.subs import transcribir, escribir_ass
+    from vcc.editor import UNICO_SUBS_MARGEN, FUENTES
+    trabajo = RAIZ / cfg["carpeta_trabajo"]
+    trabajo.mkdir(exist_ok=True)
+    salida_dir = RAIZ / cfg["carpeta_bandeja"]
+    salida_dir.mkdir(exist_ok=True)
+    for tag in [t.strip() for t in tags.split(",") if t.strip()]:
+        subprocess.run(["gh", "release", "download", tag, "-D", str(trabajo), "--clobber"], check=True)
+        video = trabajo / f"{tag}.mp4"
+        audio = trabajo / f"{tag}.wav"
+        subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", str(video), "-vn", "-ac", "1", "-ar", "16000", str(audio)], check=True)
+        palabras = transcribir(audio, cfg["modelo_subtitulos"], cfg["idioma"])
+        if not palabras:
+            log.warning("%s: sin voz reconocible, se deja igual", tag)
+            continue
+        ass = trabajo / f"{tag}.ass"
+        escribir_ass(palabras, ass, margen_v=UNICO_SUBS_MARGEN)
+        ass_esc = str(ass).replace("\\", "/").replace(":", "\\:")
+        fontsdir = str(FUENTES).replace(":", "\\:")
+        nuevo = f"{tag}-subs"
+        subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", str(video), "-vf", f"ass='{ass_esc}':fontsdir='{fontsdir}'",
+                        "-c:v", "libx264", "-preset", "veryfast", "-crf", "20", "-pix_fmt", "yuv420p",
+                        "-c:a", "copy", "-movflags", "+faststart", str(salida_dir / f"{nuevo}.mp4")], check=True)
+        meta = trabajo / f"{tag}.json"
+        if meta.exists():
+            d = json.loads(meta.read_text())
+            d["video"] = f"{nuevo}.mp4"
+            (salida_dir / f"{nuevo}.json").write_text(json.dumps(d, ensure_ascii=False, indent=2))
+        else:
+            (salida_dir / f"{nuevo}.json").write_text("{}")
+        log.info("Subtitulado: %s (%d palabras)", nuevo, len(palabras))
+
+
 def cmd_descubrir(cfg):
     """Streamers en español jugando ahora a GTA (VI o V), ordenados por espectadores."""
     tw = Twitch(cfg["twitch_client_id"], cfg["twitch_client_secret"])
@@ -180,6 +215,8 @@ if __name__ == "__main__":
     orden = sys.argv[1] if len(sys.argv) > 1 else "short"
     if orden == "descubrir":
         cmd_descubrir(cfg)
+    elif orden == "subtitular":
+        cmd_subtitular(cfg, os.environ.get("CANAL") or "")
     elif orden == "directo":
         cmd_directo(cfg, os.environ.get("CANAL") or "rubius", int(os.environ.get("MINUTOS") or 40))
     else:
