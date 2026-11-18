@@ -126,6 +126,8 @@ def cmd_directo(cfg, canal, minutos, cuantos=4):
     salida_dir = RAIZ / cfg["carpeta_bandeja"]
     salida_dir.mkdir(exist_ok=True)
     canal = canal.strip().lower().lstrip("@")
+    # streamers de cualquier idioma: se detecta y, si no es español, se subtitula traducido
+    cfg = dict(cfg, idioma=os.environ.get("IDIOMA") or "auto")
     video, t0, mensajes = directo.grabar(canal, minutos, trabajo / f"directo-{canal}.ts")
     dur = float(subprocess.run(["ffprobe", "-v", "0", "-show_entries", "format=duration", "-of", "csv=p=0",
                                 str(video)], capture_output=True, text=True).stdout.strip() or 0)
