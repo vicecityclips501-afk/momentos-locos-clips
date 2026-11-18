@@ -138,6 +138,10 @@ def cmd_directo(cfg, canal, minutos, cuantos=4):
     hechos = []
     for n, (ini, fin, fuerza, muestra) in enumerate(picos, 1):
         corte = directo.cortar(video, ini, fin, trabajo / f"corte-{canal}-{n}.mp4")
+        vol = directo.volumen_medio(corte)
+        if vol < -35:
+            log.info("Descartado corte %d: casi sin sonido (%.1f dB)", n, vol)
+            continue
         nombre = f"directo-{canal}-{marca}-{n}"
         montar_unico(corte, salida_dir / f"{nombre}.mp4", canal, cfg, trabajo)
         meta = {
