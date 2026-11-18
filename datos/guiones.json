@@ -1,0 +1,72 @@
+[
+  {
+    "id": "nota99",
+    "chip": "GTA VI",
+    "chip2": "YA HAY NOTAS",
+    "fuente": "Fuente: Metacritic y OpenCritic · 18 nov 2026",
+    "bpm": 122, "raiz": 45,
+    "fondos": ["bg3.png", "bg1.png", "bg7.png", "bg5.png", "bg2.png", "bg8.png"],
+    "escenas": [
+      {"tipo": "numero", "dur": 2.6, "desde": 0, "hasta": 99, "color": "amarillo", "tam": 520,
+       "arriba": "METACRITIC", "abajo": "GTA 6 YA TIENE NOTA", "color_abajo": "blanco", "tono": "amarillo"},
+      {"tipo": "titular", "dur": 3.3, "lineas": ["El juego *mejor*", "*valorado* de", "la *historia*"], "tam": 128,
+       "sub": "Empatado con Zelda: Ocarina of Time (1998)", "tono": "rosa"},
+      {"tipo": "barras", "dur": 4.6, "titulo": "Rockstar contra Rockstar", "min": 90, "max": 100, "paso": 158,
+       "items": [["GTA VI · 2026", 99, true], ["GTA IV · 2008", 98, false], ["GTA V · 2013", 97, false],
+                 ["Red Dead Redemption 2 · 2018", 97, false], ["GTA III · 2001", 97, false]], "tono": "cian"},
+      {"tipo": "versus", "dur": 4.3, "titulo": "Pero hay un detalle",
+       "lados": [{"arriba": "ZELDA · 1998", "num": 22, "abajo": "análisis\npara su 99", "color": "blanco"},
+                 {"arriba": "GTA VI · 2026", "num": 150, "sufijo": "+", "abajo": "análisis\npara su 99", "color": "amarillo", "brillo": true}],
+       "nota": "Casi 7 veces más críticas", "tono": "amarillo"},
+      {"tipo": "numero", "dur": 2.8, "desde": 0, "hasta": 100, "sufijo": "%", "color": "verde", "tam": 380,
+       "arriba": "OPENCRITIC", "abajo": "de los críticos\nlo recomienda", "color_abajo": "blanco", "tono": "verde"},
+      {"tipo": "cta", "dur": 2.6, "texto": "¿Le das un 10?", "sub": "Te leo en comentarios", "pulso": "SUSCRÍBETE", "tono": "rosa"}
+    ]
+  },
+  {
+    "id": "reservas",
+    "chip": "GTA VI",
+    "chip2": "ANTES DE SALIR",
+    "fuente": "Estimación de Sensor Tower · reservas digitales PS5 y Xbox",
+    "bpm": 118, "raiz": 43,
+    "fondos": ["bg2.png", "bg5.png", "bg8.png", "bg4.png", "bg1.png", "bg6.png"],
+    "escenas": [
+      {"tipo": "numero", "dur": 2.8, "desde": 0, "hasta": 15, "sufijo": " M", "color": "amarillo", "tam": 460,
+       "arriba": "RESERVAS DE GTA 6", "abajo": "Y nadie lo ha jugado aún", "tono": "amarillo"},
+      {"tipo": "linea", "dur": 4.2, "titulo": "Cómo se han disparado", "sufijo": " M", "dec": 1, "max": 17,
+       "puntos": [["18 ago", 4.4], ["5 nov", 7.7], ["10 nov", 9.7], ["16 nov", 14.9]], "tono": "rosa"},
+      {"tipo": "numero", "dur": 3.0, "desde": 0, "hasta": 1450, "sufijo": " M$", "color": "verde", "tam": 300,
+       "arriba": "YA HA INGRESADO", "abajo": "antes de salir a la venta", "tono": "verde"},
+      {"tipo": "versus", "dur": 4.2, "titulo": "Récord de reservas",
+       "lados": [{"arriba": "CYBERPUNK 2077", "num": 8, "sufijo": " M", "abajo": "anterior\nrécord", "color": "blanco"},
+                 {"arriba": "GTA VI", "num": 15, "sufijo": " M", "abajo": "y sin versión\npara PC", "color": "amarillo", "brillo": true}],
+       "nota": "Casi el DOBLE", "tono": "amarillo"},
+      {"tipo": "barras", "dur": 3.8, "titulo": "¿Qué edición se compra?", "min": 0, "max": 100, "paso": 210, "sufijo": "%",
+       "items": [["Ultimate · 100 $", 89, true], ["Estándar · 80 $", 11, false]],
+       "nota": "\"Nunca había visto un 90%\" (Sensor Tower)", "tono": "cian"},
+      {"tipo": "cta", "dur": 2.6, "texto": "¿La has reservado?", "sub": "Responde: SÍ o NO", "pulso": "SUSCRÍBETE", "tono": "rosa"}
+    ]
+  },
+  {
+    "id": "fps30",
+    "chip": "GTA VI",
+    "chip2": "LA ÚNICA PEGA",
+    "fuente": "Fuentes: Rockstar (vía Tom's Hardware) y análisis del 18 nov",
+    "bpm": 112, "raiz": 40,
+    "fondos": ["bg6.png", "bg3.png", "bg1.png", "bg7.png", "bg4.png", "bg2.png"],
+    "escenas": [
+      {"tipo": "numero", "dur": 2.8, "desde": 60, "hasta": 30, "sufijo": " FPS", "color": "rojo", "tam": 330,
+       "arriba": "GTA 6 EN CONSOLA", "abajo": "La queja que más se repite", "tono": "rojo"},
+      {"tipo": "titular", "dur": 3.2, "lineas": ["*Ni* *en* *PS5* *Pro*", "llega a 60"], "tam": 132, "color": "rojo",
+       "sub": "Sin modo rendimiento en ninguna consola", "tono": "rojo", "golpe": true},
+      {"tipo": "barras", "dur": 3.8, "titulo": "Fotogramas por segundo", "min": 0, "max": 60, "paso": 210, "sufijo": " FPS",
+       "items": [["GTA VI en consolas", 30, true], ["Lo que pedía la gente", 60, false]],
+       "nota": "El cuello de botella es la CPU", "tono": "cian"},
+      {"tipo": "titular", "dur": 3.6, "lineas": ["Rockstar elige", "*gráficos* antes", "que *fluidez*"], "tam": 120,
+       "sub": "Ya pasó con GTA V y Red Dead 2", "tono": "amarillo"},
+      {"tipo": "titular", "dur": 3.2, "lineas": ["¿Parche a *60*?", "*No* *lo* *prometen*"], "tam": 128, "color": "cian",
+       "sub": "Ni sí ni no: de momento, 30", "tono": "cian"},
+      {"tipo": "cta", "dur": 2.6, "texto": "¿Te importa?", "sub": "30 FPS: ¿problema o no?", "pulso": "SUSCRÍBETE", "tono": "rosa"}
+    ]
+  }
+]
