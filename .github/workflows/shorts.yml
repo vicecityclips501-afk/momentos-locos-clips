@@ -7,13 +7,13 @@ on:
   workflow_dispatch:
     inputs:
       orden:
-        description: "short, directo o descubrir"
+        description: "short, directo, subtitular o descubrir"
         default: "short"
       juego:
         description: "Juego de Twitch (vacío = el de config.json). Para pruebas: Grand Theft Auto V"
         default: ""
       canal:
-        description: "Para 'directo': canal de Twitch a grabar"
+        description: "Para 'directo': canal de Twitch a grabar. Para 'subtitular': tags separados por comas"
         default: "rubius"
       minutos:
         description: "Para 'directo': minutos a grabar (máx. 300)"
@@ -38,6 +38,7 @@ jobs:
       JUEGO: ${{ github.event.inputs.juego }}
       CANAL: ${{ github.event.inputs.canal }}
       MINUTOS: ${{ github.event.inputs.minutos }}
+      GH_TOKEN: ${{ github.token }}
     steps:
       - uses: actions/checkout@v4
 
