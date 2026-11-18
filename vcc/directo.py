@@ -119,6 +119,14 @@ def momentos(t0, mensajes, duracion_video, cuantos=4):
     return [(ini, fin, fuerza, muestra) for _p, ini, fin, fuerza, muestra in elegidos]
 
 
+def volumen_medio(video):
+    """Volumen medio en dB (muy negativo = casi silencio)."""
+    r = subprocess.run(["ffmpeg", "-hide_banner", "-i", str(video), "-af", "volumedetect", "-f", "null", "-"],
+                       capture_output=True, text=True)
+    m = re.search(r"mean_volume: (-?[\d.]+) dB", r.stderr)
+    return float(m.group(1)) if m else -99.0
+
+
 def cortar(video, ini, fin, salida):
     subprocess.run([
         "ffmpeg", "-y", "-v", "error", "-ss", f"{ini:.2f}", "-i", str(video), "-t", f"{fin - ini:.2f}",
