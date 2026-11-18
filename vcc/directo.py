@@ -86,10 +86,14 @@ def momentos(t0, mensajes, duracion_video, cuantos=4):
     n = int(duracion_video) + 1
     puntos = [0.0] * n
     textos = [[] for _ in range(n)]
+    reac = [0] * n
     for t, txt in mensajes:
         seg = int(t - t0 - REACCION_SEG)
         if 0 <= seg < n:
-            puntos[seg] += 1 + 2 * len(REACCION.findall(txt))
+            # las risas y reacciones pesan mucho más que el resto (así las votaciones del chat no cuentan)
+            r = min(2, len(REACCION.findall(txt)))
+            puntos[seg] += 0.3 + 3 * r
+            reac[seg] += 1 if r else 0
             textos[seg].append(txt)
     suma = [sum(puntos[i:i + VENTANA]) for i in range(n)]
     if not any(suma):
@@ -98,8 +102,11 @@ def momentos(t0, mensajes, duracion_video, cuantos=4):
     candidatos = sorted(range(n), key=lambda i: suma[i], reverse=True)
     elegidos = []
     for i in candidatos:
-        if suma[i] < base * 1.8 or len(elegidos) >= cuantos:
+        if suma[i] < base * 4 or len(elegidos) >= cuantos:
             break
+        total = sum(len(textos[j]) for j in range(i, min(n, i + VENTANA)))
+        if total and sum(reac[i:i + VENTANA]) / total < 0.25:
+            continue  # pico de mensajes sin risas: votaciones, spam de códigos…
         pico = i + VENTANA / 2
         ini, fin = pico - ANTES, pico + DESPUES
         if ini < 0 or fin > duracion_video:
