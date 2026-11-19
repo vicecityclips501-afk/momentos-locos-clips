@@ -195,6 +195,26 @@ def cmd_subtitular(cfg, tags):
         log.info("Subtitulado: %s (%d palabras)", nuevo, len(palabras))
 
 
+def cmd_rotular(cfg, pares):
+    """Pone el titular arriba en Shorts ya montados. CANAL = 'tag|Titular con *palabras*;tag2|...'.
+    Crea una release nueva '<tag>-tit'."""
+    from vcc.rotulo import rotular
+    trabajo = RAIZ / cfg["carpeta_trabajo"]
+    trabajo.mkdir(exist_ok=True)
+    salida_dir = RAIZ / cfg["carpeta_bandeja"]
+    salida_dir.mkdir(exist_ok=True)
+    for par in [p for p in pares.split(";") if "|" in p]:
+        tag, texto = [x.strip() for x in par.split("|", 1)]
+        subprocess.run(["gh", "release", "download", tag, "-D", str(trabajo), "--clobber"], check=True)
+        nuevo = f"{tag}-tit"
+        rotular(trabajo / f"{tag}.mp4", texto, salida_dir / f"{nuevo}.mp4", trabajo)
+        meta = trabajo / f"{tag}.json"
+        d = json.loads(meta.read_text()) if meta.exists() else {}
+        d["video"], d["rotulo"] = f"{nuevo}.mp4", texto
+        (salida_dir / f"{nuevo}.json").write_text(json.dumps(d, ensure_ascii=False, indent=2))
+        log.info("Rotulado: %s", nuevo)
+
+
 def cmd_descubrir(cfg):
     """Streamers en español jugando ahora a GTA (VI o V), ordenados por espectadores."""
     tw = Twitch(cfg["twitch_client_id"], cfg["twitch_client_secret"])
@@ -221,6 +241,8 @@ if __name__ == "__main__":
     orden = sys.argv[1] if len(sys.argv) > 1 else "short"
     if orden == "descubrir":
         cmd_descubrir(cfg)
+    elif orden == "rotular":
+        cmd_rotular(cfg, os.environ.get("CANAL", ""))
     elif orden == "datos":
         subprocess.run([sys.executable, str(RAIZ / "datos" / "voz_render.py")] + ([os.environ["CANAL"]] if os.environ.get("CANAL") not in (None, "", "rubius") else []), check=True)
     elif orden == "subtitular":
