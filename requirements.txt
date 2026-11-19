@@ -7,3 +7,4 @@ yt-dlp
 streamlink
 pillow
 numpy
+opencv-python-headless<5
