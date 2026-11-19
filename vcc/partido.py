@@ -89,7 +89,7 @@ def filtro_partido(caja, ancho_video, alto_video, credito, fuente, fps=30):
         f"[bg][cam]overlay=0:{CAM_Y}[p1];"
         f"[p1][juego]overlay=0:{JUEGO_Y}[p2];"
         f"[p2]drawtext=fontfile='{fuente}':text='{credito}':fontsize=38:fontcolor=white:"
-        f"x=34:y={CAM_Y + CAM_H}-66:box=1:boxcolor=0x9146FF:boxborderw=12[vp]"
+        f"x=34:y={CAM_Y}+22:box=1:boxcolor=0x9146FF:boxborderw=12[vp]"
     )
 
 
