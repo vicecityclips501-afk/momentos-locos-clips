@@ -1,9 +1,12 @@
 """Montaje del Short: clip en vertical, rótulos, voz en off y subtítulos."""
+import logging
 import subprocess
 from pathlib import Path
 
 from .subs import escribir_ass, transcribir
 from .voice import duracion, tts
+
+log = logging.getLogger(__name__)
 
 RAIZ = Path(__file__).resolve().parent.parent
 # Fuente Inter: la del sistema (paquete fonts-inter) o, si no, la carpeta fonts/ del proyecto
@@ -126,6 +129,13 @@ def montar_top(clips, salida, cfg, trabajo: Path):
     return unir(segmentos, salida, trabajo)
 
 
+def _tam(video):
+    r = subprocess.run(["ffprobe", "-v", "error", "-select_streams", "v:0", "-show_entries", "stream=width,height",
+                        "-of", "csv=p=0:s=x", str(video)], capture_output=True, text=True, check=True)
+    w, h = r.stdout.strip().split("x")[:2]
+    return int(w), int(h)
+
+
 def montar_unico(clip, salida, streamer, cfg, trabajo: Path):
     """Short limpio de un solo clip: el clip entero, grande y centrado, con subtítulos
     de lo que se dice y el nombre del streamer. Sin voz en off ni títulos."""
@@ -140,7 +150,14 @@ def montar_unico(clip, salida, streamer, cfg, trabajo: Path):
     # si después de la última frase hay más de 4 s sin hablar, se corta ahí: los Shorts que se alargan pierden gente
     if palabras and dur - palabras[-1][1] > 4:
         dur = max(10.0, palabras[-1][1] + 1.5)
-    escribir_ass(palabras, ass, margen_v=UNICO_SUBS_MARGEN)
+    # pantalla partida (cámara arriba, juego abajo) si el streamer tiene facecam; si no, juego con zoom
+    from vcc import partido
+    try:
+        caja = partido.detectar_camara(clip)
+    except Exception as e:  # el formato partido nunca debe tumbar el montaje
+        log.warning("Detección de cámara fallida: %s", e)
+        caja = None
+    escribir_ass(palabras, ass, margen_v=partido.SUBS_MARGEN if caja else UNICO_SUBS_MARGEN)
 
     credito = _esc(f"twitch.tv/{streamer}")
     ass_esc = str(ass).replace("\\", "/").replace(":", "\\:")
@@ -155,6 +172,9 @@ def montar_unico(clip, salida, streamer, cfg, trabajo: Path):
         f"x=(w-text_w)/2:y={UNICO_Y}-96:box=1:boxcolor={MORADO_TWITCH}:boxborderw=16[v2];"
         f"[v2]ass='{ass_esc}':fontsdir='{fontsdir}'[v]"
     )
+    if caja:
+        vw, vh = _tam(clip)
+        vf = partido.filtro_partido(caja, vw, vh, credito, F_TEXTO, FPS) + f";[vp]ass='{ass_esc}':fontsdir='{fontsdir}'[v]"
     _run([
         "ffmpeg", "-y", "-t", f"{dur:.2f}", "-i", str(clip),
         "-filter_complex", vf, "-map", "[v]", "-map", "0:a",
