@@ -196,7 +196,8 @@ def cmd_subtitular(cfg, tags):
 
 
 def cmd_rotular(cfg, pares):
-    """Pone el titular arriba en Shorts ya montados. CANAL = 'tag|Titular con *palabras*;tag2|...'.
+    """Pone el titular arriba en Shorts ya montados. CANAL = 'tag|Titular con *palabras*[|5.1-9.1,12-13];tag2|...'
+    (el tercer campo, opcional, son tramos en segundos que se recortan).
     Crea una release nueva '<tag>-tit'."""
     from vcc.rotulo import rotular
     trabajo = RAIZ / cfg["carpeta_trabajo"]
@@ -204,10 +205,12 @@ def cmd_rotular(cfg, pares):
     salida_dir = RAIZ / cfg["carpeta_bandeja"]
     salida_dir.mkdir(exist_ok=True)
     for par in [p for p in pares.split(";") if "|" in p]:
-        tag, texto = [x.strip() for x in par.split("|", 1)]
+        trozos = [x.strip() for x in par.split("|")]
+        tag, texto = trozos[0], trozos[1]
+        quitar = [tuple(float(n) for n in t.split("-")) for t in trozos[2].split(",") if "-" in t] if len(trozos) > 2 else None
         subprocess.run(["gh", "release", "download", tag, "-D", str(trabajo), "--clobber"], check=True)
         nuevo = f"{tag}-tit"
-        rotular(trabajo / f"{tag}.mp4", texto, salida_dir / f"{nuevo}.mp4", trabajo)
+        rotular(trabajo / f"{tag}.mp4", texto, salida_dir / f"{nuevo}.mp4", trabajo, quitar)
         meta = trabajo / f"{tag}.json"
         d = json.loads(meta.read_text()) if meta.exists() else {}
         d["video"], d["rotulo"] = f"{nuevo}.mp4", texto
