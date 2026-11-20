@@ -70,9 +70,20 @@ def rotular(video, texto, salida, trabajo, quitar=None):
     png = png_rotulo(texto, Path(trabajo) / (Path(salida).stem + "-rotulo.png"))
     pre, v, a, audio = "", "[0:v]", "0:a", ["-c:a", "copy"]
     if quitar:
-        cond = "+".join(f"between(t,{x},{y})" for x, y in quitar)
-        pre = (f"[0:v]select='not({cond})',setpts=N/FRAME_RATE/TB[vc];"
-               f"[0:a]aselect='not({cond})',asetpts=N/SR/TB[ac];")
+        dur = float(subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0",
+                                    str(video)], capture_output=True, text=True, check=True).stdout.strip())
+        tramos, t0 = [], 0.0
+        for x, y in sorted(quitar):
+            if x > t0:
+                tramos.append((t0, x))
+            t0 = max(t0, y)
+        if t0 < dur:
+            tramos.append((t0, dur))
+        partes = ""
+        for i, (x, y) in enumerate(tramos):
+            partes += (f"[0:v]trim={x}:{y},setpts=PTS-STARTPTS[v{i}];"
+                       f"[0:a]atrim={x}:{y},asetpts=PTS-STARTPTS[a{i}];")
+        pre = partes + "".join(f"[v{i}][a{i}]" for i in range(len(tramos))) + f"concat=n={len(tramos)}:v=1:a=1[vc][ac];"
         v, a, audio = "[vc]", "[ac]", ["-c:a", "aac", "-b:a", "160k"]
     # el rótulo entra con un pequeño fundido en los primeros 0,25 s
     subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", str(video), "-loop", "1", "-i", str(png),
