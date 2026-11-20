@@ -104,20 +104,17 @@ def fondo(ruta, tono, t, i_escena):
 
 # ------------------------------------------------------------------ texto
 def texto_capa(texto, f, color, stroke=0, glow=None, glow_r=18):
-    """Imagen RGBA recortada con el texto (y su brillo)."""
+    """Imagen RGBA recortada con el texto. Sin brillo de color (se veía borroso):
+    solo una sombra oscura suave debajo para que se lea bien sobre cualquier fondo."""
     bbox = f.getbbox(texto, stroke_width=stroke)
-    pad = glow_r * 3 if glow else 10
+    pad = 30
     w, h = bbox[2] - bbox[0] + pad * 2, bbox[3] - bbox[1] + pad * 2
     capa = Image.new("RGBA", (w, h), (0, 0, 0, 0))
-    d = ImageDraw.Draw(capa)
     pos = (pad - bbox[0], pad - bbox[1])
-    if glow:
-        g = Image.new("RGBA", (w, h), (0, 0, 0, 0))
-        ImageDraw.Draw(g).text(pos, texto, font=f, fill=(*glow, 255), stroke_width=stroke + 4)
-        g = g.filter(ImageFilter.GaussianBlur(glow_r))
-        capa.alpha_composite(g)
-        capa.alpha_composite(g)
-    d.text(pos, texto, font=f, fill=(*color, 255), stroke_width=stroke, stroke_fill=(10, 4, 24, 255))
+    sombra = Image.new("RGBA", (w, h), (0, 0, 0, 0))
+    ImageDraw.Draw(sombra).text((pos[0], pos[1] + 6), texto, font=f, fill=(0, 0, 0, 170), stroke_width=stroke + 2)
+    capa.alpha_composite(sombra.filter(ImageFilter.GaussianBlur(9)))
+    ImageDraw.Draw(capa).text(pos, texto, font=f, fill=(*color, 255), stroke_width=stroke, stroke_fill=(10, 4, 24, 255))
     return capa
 
 
