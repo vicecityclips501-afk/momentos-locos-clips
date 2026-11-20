@@ -104,13 +104,17 @@ def fondo(ruta, tono, t, i_escena):
 
 # ------------------------------------------------------------------ texto
 def texto_capa(texto, f, color, stroke=0, glow=None, glow_r=18):
-    """Imagen RGBA recortada con el texto. Sin brillo de color (se veía borroso):
-    solo una sombra oscura suave debajo para que se lea bien sobre cualquier fondo."""
-    bbox = f.getbbox(texto, stroke_width=stroke)
+    """Imagen RGBA con el texto, sin brillo de color: solo una sombra oscura suave
+    debajo para que se lea sobre cualquier fondo.
+    La caja vertical usa las métricas de la fuente (ascendente + descendente), no la
+    caja de cada palabra: así todas las palabras del mismo tamaño comparten línea base
+    y no 'bailan' arriba y abajo cuando se colocan una a una."""
+    asc, desc = f.getmetrics()
+    x0, _, x1, _ = f.getbbox(texto, stroke_width=stroke)
     pad = 30
-    w, h = bbox[2] - bbox[0] + pad * 2, bbox[3] - bbox[1] + pad * 2
+    w, h = x1 - x0 + pad * 2, asc + desc + pad * 2
     capa = Image.new("RGBA", (w, h), (0, 0, 0, 0))
-    pos = (pad - bbox[0], pad - bbox[1])
+    pos = (pad - x0, pad)
     sombra = Image.new("RGBA", (w, h), (0, 0, 0, 0))
     ImageDraw.Draw(sombra).text((pos[0], pos[1] + 6), texto, font=f, fill=(0, 0, 0, 170), stroke_width=stroke + 2)
     capa.alpha_composite(sombra.filter(ImageFilter.GaussianBlur(9)))
@@ -206,7 +210,7 @@ def esc_barras(c, t, e):
         pegar(c, cache_texto(e["titulo"], F_BLACK, 74, BLANCO), W / 2, 470, 1, ease_out(t / 0.3))
     items = e["items"]
     vmin, vmax = e.get("min", 0), e.get("max", max(i[1] for i in items))
-    x0, x1 = 90, W - 120
+    x0, x1 = 110, W - 110  # márgenes iguales a izquierda y derecha
     y = 600
     paso = e.get("paso", 175)
     for k, (etq, val, dest) in enumerate(items):
@@ -228,8 +232,6 @@ def esc_barras(c, t, e):
             colb = ROSA if not dest else AMARILLO
             if dest:
                 db.rounded_rectangle([30, 30, 30 + int(largo), 86], 14, fill=(*colb, 255))
-                barra = barra.filter(ImageFilter.GaussianBlur(14))
-                ImageDraw.Draw(barra).rounded_rectangle([30, 30, 30 + int(largo), 86], 14, fill=(*colb, 255))
             else:
                 db.rounded_rectangle([30, 30, 30 + int(largo), 86], 14, fill=(*colb, 230))
             c.alpha_composite(barra, (x0 - 30, yb - 30))
@@ -248,6 +250,8 @@ def esc_versus(c, t, e):
     if e.get("titulo"):
         pegar(c, cache_texto(e["titulo"], F_BLACK, 80, BLANCO), W / 2, 520, 1, ease_out(t / 0.3))
     d = ImageDraw.Draw(c)
+    # mismo tamaño para las dos etiquetas de arriba (el de la más larga), para que no se vean desiguales
+    tam_arriba = min(ajustar(l["arriba"], F_XB, 50, 380).size for l in e["lados"])
     for k, lado in enumerate(e["lados"]):
         cx = W * (0.27 if k == 0 else 0.73)
         tt = t - 0.2 - k * 0.45
@@ -260,8 +264,7 @@ def esc_versus(c, t, e):
         dc = ImageDraw.Draw(caja)
         dc.rounded_rectangle([0, 0, 439, 639], 36, fill=(12, 8, 30, int(200 * a)), outline=(*col, int(255 * a)), width=5)
         pegar(c, caja, cx, 960, 0.9 + 0.1 * ease_back(tt / 0.35), 1)
-        fa = ajustar(lado["arriba"], F_XB, 50, 380)
-        pegar(c, cache_texto(lado["arriba"], F_XB, fa.size, GRIS), cx, 730, 1, a)
+        pegar(c, cache_texto(lado["arriba"], F_XB, tam_arriba, GRIS), cx, 730, 1, a)
         v = lado["num"] * ease_out(tt / 0.8)
         txt = num_fmt(v) + lado.get("sufijo", "")
         f = ajustar(txt, F_BLACK, 190, 380)
@@ -304,8 +307,6 @@ def esc_linea(c, t, e):
         ImageDraw.Draw(rel).polygon(poly, fill=(*ROSA, 60))
         c.alpha_composite(rel)
         dl.line(camino, fill=(*ROSA, 255), width=14, joint="curve")
-        glow = capa.filter(ImageFilter.GaussianBlur(16))
-        c.alpha_composite(glow)
         c.alpha_composite(capa)
     for i, (etq, val) in enumerate(pts):
         if prog + 0.001 < i:
