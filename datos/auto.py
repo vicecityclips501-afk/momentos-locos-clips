@@ -41,7 +41,10 @@ def decir(texto, destino):
         except Exception:
             if intento == 2:
                 raise
-    subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", str(mp3), "-ac", "1", "-ar", str(SR), str(destino)], check=True)
+    # quitar el silencio que edge-tts deja al principio y al final (si no, quedan pausas de 1 s entre frases)
+    recorte = ("silenceremove=start_periods=1:start_threshold=-45dB,areverse,"
+               "silenceremove=start_periods=1:start_threshold=-45dB,areverse")
+    subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", str(mp3), "-af", recorte, "-ac", "1", "-ar", str(SR), str(destino)], check=True)
     with wave.open(str(destino)) as w:
         return np.frombuffer(w.readframes(w.getnframes()), np.int16).astype(np.float32) / 32767
 
