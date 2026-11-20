@@ -246,6 +246,8 @@ if __name__ == "__main__":
         cmd_descubrir(cfg)
     elif orden == "rotular":
         cmd_rotular(cfg, os.environ.get("CANAL", ""))
+    elif orden == "datosvoz":
+        subprocess.run([sys.executable, str(RAIZ/"datos"/"auto.py")] + [x for x in os.environ.get("CANAL", "").split(",") if x and x != "rubius"], check=True)
     elif orden == "datos":
         subprocess.run([sys.executable, str(RAIZ / "datos" / "voz_render.py")] + ([os.environ["CANAL"]] if os.environ.get("CANAL") not in (None, "", "rubius") else []), check=True)
     elif orden == "subtitular":
