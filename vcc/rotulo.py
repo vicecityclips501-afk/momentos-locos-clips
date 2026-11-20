@@ -65,11 +65,19 @@ def png_rotulo(texto, destino):
     return destino
 
 
-def rotular(video, texto, salida, trabajo):
+def rotular(video, texto, salida, trabajo, quitar=None):
+    """quitar: lista de tramos (inicio, fin) en segundos a recortar (pantallas de carga, menús)."""
     png = png_rotulo(texto, Path(trabajo) / (Path(salida).stem + "-rotulo.png"))
+    pre, v, a, audio = "", "[0:v]", "0:a", ["-c:a", "copy"]
+    if quitar:
+        cond = "+".join(f"between(t,{x},{y})" for x, y in quitar)
+        pre = (f"[0:v]select='not({cond})',setpts=N/FRAME_RATE/TB[vc];"
+               f"[0:a]aselect='not({cond})',asetpts=N/SR/TB[ac];")
+        v, a, audio = "[vc]", "[ac]", ["-c:a", "aac", "-b:a", "160k"]
     # el rótulo entra con un pequeño fundido en los primeros 0,25 s
     subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", str(video), "-loop", "1", "-i", str(png),
-                    "-filter_complex", "[1]format=rgba,fade=in:st=0:d=0.25:alpha=1[r];[0][r]overlay=0:0:shortest=1",
+                    "-filter_complex", pre + f"[1]format=rgba,fade=in:st=0:d=0.25:alpha=1[r];{v}[r]overlay=0:0:shortest=1[vo]",
+                    "-map", "[vo]", "-map", a,
                     "-c:v", "libx264", "-preset", "veryfast", "-crf", "20", "-pix_fmt", "yuv420p",
-                    "-c:a", "copy", "-movflags", "+faststart", str(salida)], check=True)
+                    *audio, "-movflags", "+faststart", str(salida)], check=True)
     return salida
