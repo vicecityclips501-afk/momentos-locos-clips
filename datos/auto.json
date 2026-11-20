@@ -1,0 +1,212 @@
+[
+ {
+  "id": "record24h",
+  "chip": "GTA VI",
+  "chip2": "EL RÉCORD",
+  "bpm": 122,
+  "raiz": 45,
+  "fuente": "Fuentes: Guinness, Piper Sandler y Newzoo · previsiones, no ventas oficiales",
+  "fondos": [
+   "bg2.png",
+   "bg7.png",
+   "bg4.png",
+   "bg1.png",
+   "bg6.png",
+   "bg3.png"
+  ],
+  "escenas": [
+   {
+    "tipo": "numero",
+    "desde": 0,
+    "hasta": 11.21,
+    "dec": 2,
+    "sufijo": " M",
+    "arriba": "RÉCORD GUINNESS",
+    "abajo": "copias vendidas en 24 h\npor GTA V en 2013",
+    "color": "amarillo",
+    "color_abajo": "amarillo",
+    "tam": 300,
+    "tono": "amarillo",
+    "voz": "Once millones de copias en un solo día. Ese es el récord Guinness que dejó Ge te a cinco en 2013."
+   },
+   {
+    "tipo": "titular",
+    "lineas": [
+     "Y desde ayer",
+     "*GTA 6* va",
+     "a *por él*"
+    ],
+    "sub": "A la venta desde el 19 de noviembre",
+    "tam": 128,
+    "tono": "rosa",
+    "color": "rosa",
+    "voz": "Y desde ayer, Ge te a seis va a por él."
+   },
+   {
+    "tipo": "barras",
+    "titulo": "Más vendidos en 24 horas",
+    "items": [
+     [
+      "GTA V · 2013",
+      11.2,
+      true
+     ],
+     [
+      "Cyberpunk 2077 · 2020",
+      8,
+      false
+     ],
+     [
+      "CoD MW3 · 2011",
+      6.5,
+      false
+     ]
+    ],
+    "min": 0,
+    "max": 12,
+    "dec": 1,
+    "sufijo": " M",
+    "paso": 175,
+    "tono": "cian",
+    "voz": "Detrás quedaron Cyberpunk, con ocho millones, y Call of Duty Modern Warfare 3, con seis y medio."
+   },
+   {
+    "tipo": "versus",
+    "titulo": "Lo que se espera",
+    "lados": [
+     {
+      "arriba": "GTA V · 2013",
+      "num": 11,
+      "sufijo": " M",
+      "abajo": "el primer\ndía",
+      "color": "blanco"
+     },
+     {
+      "arriba": "GTA VI · PREVISIÓN",
+      "num": 45,
+      "sufijo": " M",
+      "abajo": "el primer\ndía",
+      "color": "amarillo",
+      "brillo": true
+     }
+    ],
+    "nota": "4 veces el récord",
+    "tono": "amarillo",
+    "golpe": true,
+    "voz": "El banco Piper Sandler calcula que Ge te a seis podría vender más de cuarenta y cinco millones el primer día. Cuatro veces el récord."
+   },
+   {
+    "tipo": "numero",
+    "desde": 0,
+    "hasta": 51,
+    "sufijo": " M",
+    "arriba": "NEWZOO",
+    "abajo": "copias en su\nprimera semana",
+    "color": "verde",
+    "color_abajo": "blanco",
+    "tam": 380,
+    "tono": "verde",
+    "voz": "Y Newzoo habla de hasta cincuenta y un millones en su primera semana."
+   },
+   {
+    "tipo": "cta",
+    "texto": "¿Lo batirá?",
+    "sub": "Te leo en comentarios",
+    "pulso": "SUSCRÍBETE",
+    "tono": "rosa",
+    "voz": "¿Tú crees que lo bate? Te leo en comentarios."
+   }
+  ]
+ },
+ {
+  "id": "sinonline",
+  "chip": "GTA VI",
+  "chip2": "OJO CON ESTO",
+  "bpm": 122,
+  "raiz": 45,
+  "fuente": "Fuentes: Rockstar, Take-Two y Forbes · noviembre 2026",
+  "fondos": [
+   "bg5.png",
+   "bg8.png",
+   "bg3.png",
+   "bg6.png",
+   "bg2.png",
+   "bg1.png"
+  ],
+  "escenas": [
+   {
+    "tipo": "titular",
+    "lineas": [
+     "GTA 6 ha salido",
+     "*SIN* modo",
+     "*online*"
+    ],
+    "sub": "Solo modo historia en PS5 y Xbox Series",
+    "tam": 132,
+    "tono": "rosa",
+    "color": "rosa",
+    "golpe": true,
+    "voz": "Ge te a seis ha salido sin modo online. Solo modo historia."
+   },
+   {
+    "tipo": "numero",
+    "desde": 0,
+    "hasta": 225,
+    "sufijo": " M",
+    "arriba": "GTA V YA VA POR",
+    "abajo": "copias vendidas\ngracias en gran parte al online",
+    "color": "amarillo",
+    "color_abajo": "blanco",
+    "tam": 380,
+    "tono": "amarillo",
+    "voz": "Y es raro, porque Ge te a cinco ya va por doscientos veinticinco millones de copias, en buena parte gracias a Ge te a Online."
+   },
+   {
+    "tipo": "numero",
+    "desde": 0,
+    "hasta": 14,
+    "sufijo": " días",
+    "arriba": "EN 2013, GTA ONLINE LLEGÓ",
+    "abajo": "después de GTA V",
+    "color": "cian",
+    "color_abajo": "blanco",
+    "tam": 300,
+    "tono": "cian",
+    "voz": "En 2013, el online llegó solo catorce días después del juego."
+   },
+   {
+    "tipo": "titular",
+    "lineas": [
+     "Rockstar *no ha*",
+     "*dado fecha*"
+    ],
+    "sub": "Ni para el online ni para la versión de PC",
+    "tam": 120,
+    "tono": "amarillo",
+    "color": "amarillo",
+    "voz": "Esta vez, Rockstar no ha dado fecha. Ni para el online, ni para la versión de PC."
+   },
+   {
+    "tipo": "titular",
+    "lineas": [
+     "Se habla de",
+     "*3 a 6 meses*",
+     "de espera"
+    ],
+    "sub": "Estimaciones, nada oficial",
+    "tam": 128,
+    "tono": "verde",
+    "color": "verde",
+    "voz": "Algunas estimaciones hablan de entre tres y seis meses de espera."
+   },
+   {
+    "tipo": "cta",
+    "texto": "¿Te basta la historia?",
+    "sub": "Dímelo en comentarios",
+    "pulso": "SUSCRÍBETE",
+    "tono": "rosa",
+    "voz": "¿A ti te basta con la historia? Dímelo en comentarios."
+   }
+  ]
+ }
+]
