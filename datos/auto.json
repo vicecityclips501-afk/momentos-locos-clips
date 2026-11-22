@@ -208,5 +208,227 @@
     "voz": "¿A ti te basta con la historia? Dímelo en comentarios."
    }
   ]
+ },
+ {
+  "id": "oficial32",
+  "chip": "GTA VI",
+  "chip2": "RÉCORD",
+  "bpm": 122,
+  "raiz": 45,
+  "fuente": "Fuente: Take-Two (comunicado oficial, 20 nov 2026)",
+  "fondos": [
+   "bg1.png",
+   "bg4.png",
+   "bg7.png",
+   "bg2.png",
+   "bg5.png",
+   "bg8.png"
+  ],
+  "escenas": [
+   {
+    "tipo": "numero",
+    "desde": 0,
+    "hasta": 32.5,
+    "dec": 1,
+    "sufijo": " M",
+    "arriba": "ES OFICIAL",
+    "abajo": "copias vendidas\nantes de salir a la venta",
+    "color": "amarillo",
+    "color_abajo": "blanco",
+    "tam": 360,
+    "tono": "amarillo",
+    "voz": "Es oficial: Ge te a seis vendió treinta y dos millones y medio de copias antes incluso de salir."
+   },
+   {
+    "tipo": "numero",
+    "desde": 0,
+    "hasta": 3790,
+    "sufijo": " M$",
+    "arriba": "VENTAS DEL PRIMER DÍA",
+    "abajo": "en todo el mundo",
+    "color": "verde",
+    "color_abajo": "blanco",
+    "tam": 250,
+    "tono": "verde",
+    "voz": "Y en su primer día movió tres mil setecientos noventa millones de dólares."
+   },
+   {
+    "tipo": "titular",
+    "lineas": [
+     "El *mayor* *estreno*",
+     "de la historia del",
+     "*entretenimiento*"
+    ],
+    "sub": "Así lo llama Take-Two",
+    "tam": 118,
+    "tono": "rosa",
+    "color": "rosa",
+    "golpe": true,
+    "voz": "Take-Two lo llama el mayor estreno de la historia del entretenimiento."
+   },
+   {
+    "tipo": "versus",
+    "titulo": "Más que una peli de Marvel",
+    "lados": [
+     {
+      "arriba": "ENDGAME · CINES",
+      "num": 2799,
+      "sufijo": " M$",
+      "abajo": "en toda\nsu vida",
+      "color": "blanco"
+     },
+     {
+      "arriba": "GTA VI · 1 DÍA",
+      "num": 3790,
+      "sufijo": " M$",
+      "abajo": "en un solo\ndía",
+      "color": "amarillo",
+      "brillo": true
+     }
+    ],
+    "nota": "Casi 1.000 M$ más",
+    "tono": "amarillo",
+    "golpe": true,
+    "voz": "Es más de lo que recaudó Vengadores Endgame en toda su vida en cines. Y Ge te a seis lo hizo en un día."
+   },
+   {
+    "tipo": "barras",
+    "titulo": "Copias vendidas al salir",
+    "items": [
+     [
+      "GTA VI · 2026",
+      32.5,
+      true
+     ],
+     [
+      "GTA V · 2013",
+      11.2,
+      false
+     ],
+     [
+      "Cyberpunk 2077 · 2020",
+      8,
+      false
+     ]
+    ],
+    "min": 0,
+    "max": 34,
+    "dec": 1,
+    "sufijo": " M",
+    "paso": 175,
+    "tono": "cian",
+    "voz": "Casi el triple que Ge te a cinco, que tenía el récord con once millones."
+   },
+   {
+    "tipo": "cta",
+    "texto": "¿Ya lo tienes?",
+    "sub": "Dímelo en comentarios",
+    "pulso": "SUSCRÍBETE",
+    "tono": "rosa",
+    "voz": "¿Tú ya lo tienes? Dímelo en comentarios."
+   }
+  ]
+ },
+ {
+  "id": "consolas",
+  "chip": "GTA VI",
+  "chip2": "PS5 VS XBOX",
+  "bpm": 122,
+  "raiz": 45,
+  "fuente": "Fuente: Sensor Tower · estimación de copias digitales hasta el 19 nov",
+  "fondos": [
+   "bg3.png",
+   "bg6.png",
+   "bg2.png",
+   "bg8.png",
+   "bg1.png",
+   "bg4.png"
+  ],
+  "escenas": [
+   {
+    "tipo": "titular",
+    "lineas": [
+     "¿Dónde se ha",
+     "comprado *más*",
+     "*GTA* *6*?"
+    ],
+    "sub": "PS5 contra Xbox",
+    "tam": 128,
+    "tono": "cian",
+    "color": "cian",
+    "voz": "¿En qué consola se ha comprado más Ge te a seis? Los datos son claros."
+   },
+   {
+    "tipo": "numero",
+    "desde": 0,
+    "hasta": 75,
+    "sufijo": " %",
+    "arriba": "PLAYSTATION",
+    "abajo": "de las copias digitales\nvendidas hasta el estreno",
+    "color": "cian",
+    "color_abajo": "blanco",
+    "tam": 380,
+    "tono": "cian",
+    "voz": "El setenta y cinco por ciento de las copias digitales se vendió en PlayStation."
+   },
+   {
+    "tipo": "barras",
+    "titulo": "Copias digitales por consola",
+    "items": [
+     [
+      "PS5",
+      75,
+      true
+     ],
+     [
+      "Xbox Series",
+      25,
+      false
+     ]
+    ],
+    "min": 0,
+    "max": 80,
+    "dec": 0,
+    "sufijo": " %",
+    "paso": 200,
+    "tono": "cian",
+    "voz": "Xbox se queda con solo una de cada cuatro."
+   },
+   {
+    "tipo": "numero",
+    "desde": 0,
+    "hasta": 24.6,
+    "dec": 1,
+    "sufijo": " M",
+    "arriba": "COPIAS DIGITALES",
+    "abajo": "en PS5 y Xbox\nhasta el día de salida",
+    "color": "amarillo",
+    "color_abajo": "blanco",
+    "tam": 340,
+    "tono": "amarillo",
+    "voz": "En total, unos veinticuatro millones y medio de copias digitales hasta el día del estreno, según Sensor Tower."
+   },
+   {
+    "tipo": "titular",
+    "lineas": [
+     "Y todo eso",
+     "*sin* *versión*",
+     "*de* *PC*"
+    ],
+    "sub": "Rockstar aún no ha dado fecha",
+    "tam": 128,
+    "tono": "rosa",
+    "color": "rosa",
+    "voz": "Y todo eso, sin versión de PC."
+   },
+   {
+    "tipo": "cta",
+    "texto": "¿PS5 o Xbox?",
+    "sub": "Dímelo en comentarios",
+    "pulso": "SUSCRÍBETE",
+    "tono": "rosa",
+    "voz": "Y tú, ¿lo juegas en PS5 o en Xbox? Dímelo en comentarios."
+   }
+  ]
  }
 ]
